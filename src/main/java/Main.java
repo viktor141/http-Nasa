@@ -12,7 +12,6 @@ import java.io.IOException;
 public class Main {
     private static final ObjectMapper mapper = new ObjectMapper();
 
-
     public static void main(String[] args) throws IOException {
         CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setDefaultRequestConfig(RequestConfig.DEFAULT)
@@ -21,19 +20,18 @@ public class Main {
         HttpGet request = new HttpGet("https://api.nasa.gov/planetary/apod?api_key=TDf3fmUGddTZbPM8rpTGGXIwqz9Dh1sWCiS6BfYw");
         CloseableHttpResponse response = httpClient.execute(request);
 
-        NasaResponse nasaResponse = mapper.readValue(response.getEntity().getContent(), new TypeReference<>(){});
+        NasaResponse nasaResponse = mapper.readValue(response.getEntity().getContent(), new TypeReference<>() {});
 
-        CloseableHttpResponse getMedia = httpClient.execute(new HttpGet(nasaResponse.getHdurl()));
+        CloseableHttpResponse getMedia = httpClient.execute(new HttpGet(nasaResponse.getHurl()));
 
-        String[] name = nasaResponse.getHdurl().split("/");
+        String[] name = nasaResponse.getHurl().split("/");
 
 
-        try(FileOutputStream fos = new FileOutputStream(name[name.length-1]))
-        {
+        try (FileOutputStream fos = new FileOutputStream(name[name.length - 1])) {
             byte[] buffer = getMedia.getEntity().getContent().readAllBytes();
 
             fos.write(buffer, 0, buffer.length);
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
